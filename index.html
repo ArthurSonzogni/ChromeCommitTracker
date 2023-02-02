@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v6.js"></script>
+  <body>
+
+  <label>Kind</label>
+  <select id="kindSelect">kind</select>
+
+  <label>entries</label>
+  <select id="entriesSelect">entries</select>
+
+  <label>name</label>
+  <div id="buttons"></div>
+
+  <label>Visualisation</label>
+  <div id="my_dataviz"></div>
+</body>
+
+<style>
+body {
+  display:grid;
+  grid-template-columns: max-content auto;
+  grid-gap:5px;
+}
+
+label {
+  padding:5px;
+  margin:1px;
+  text-align:right;
+}
+
+label:after {
+  content: ":";
+}
+
+select {
+  padding:5px;
+  margin:1px;
+  border-radius:1px;
+  transition: background-color 1s;
+}
+
+
+</style>
+
+<script type="module">
+
+  const url = new URL(window.location);
+  const kind = url.searchParams.get("kind") || "author";
+  const entries = +url.searchParams.get("entries") || 1;
+  const names = (
+    url.searchParams.get("names") ||
+    Array(entries).fill('-').join('~')
+  ).split('~');
+
+  const kindSelect = d3.select("#kindSelect");
+  kindSelect
+    .selectAll('myOptions')
+    .data(["author", "review", "both"])
+    .enter()
+    .append('option')
+    .text(d => d)
+    .attr("value", d => d)
+    .property("selected", d => d == kind)
+
+  const entriesSelect = d3.select("#entriesSelect");
+  entriesSelect
+    .selectAll('myOptions')
+    .data([1,2,3,4,5])
+    .enter()
+    .append('option')
+    .text(d => d)
+    .attr("value", d => d)
+    .property("selected", d => d == entries)
+
+  entriesSelect
+    .on("change", function() {
+      url.searchParams.set("entries", entriesSelect.property("value"));
+      window.location.href = url;
+    });
+
+
+  // set the dimensions and margins of the graph
+  const margin = {
+    top: 10,
+    right: 30,
+    bottom: 30,
+    left: 60,
+  };
+
+  const width = window.innerWidth * 0.8- margin.left - margin.right;
+  const height = window.innerHeight * 0.8- margin.top - margin.bottom;
+
+  const svg = d3.select("#my_dataviz")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+  // Read the data
+  const data = await d3.csv("./data.csv");
+
+  // Convert the timestamp to date.
+  data.forEach(d => d.time = new Date(d.time * 1000));
+
+  // List of groups (here I have one group per column)
+  const allName = new Set(data.map(d => d.name));
+
+  const buttons = d3.select("#buttons");
+
+  // A color scale: one color for each name.
+  const myColor = d3.scaleOrdinal()
+    .domain(allName)
+    .range(d3.schemeSet2);
+
+  // Add X axis
+  const x = d3.scaleTime()
+    .range([ 0, width ]);
+
+  const xrender = svg.append("g")
+    .attr("transform", `translate(0, ${height})`)
+
+  // Add Y axis
+  const y = d3.scaleLinear()
+    .range([ height, 0 ]);
+
+  const yrender = svg.append("g");
+
+  // Initialize line with first group of the list
+  const line = [];
+  for(let i = 0; i<entries; ++i) {
+    line[i] = 
+      svg
+        .append('g')
+        .append("path")
+        .style("stroke-width", 10)
+        .style("fill", "none")
+  }
+
+  // A function that update the chart
+  const update = selected => {
+    const kindMap = {
+      author: 0,
+      review: 1,
+      both: 2,
+    };
+    const kind = kindMap[kindSelect.property("value")];
+
+    // Create new data with the selection.
+    const dataFilter = selected.map(s => {
+      let accu = 0;
+      return data
+         .filter(d => d.name == s && d.author != kind)
+         .reverse()
+         .map(d => {
+            accu++;
+            return {time:d.time, patch:accu};
+         });
+    });
+
+    x.domain(d3.extent(dataFilter.flat(), d => d.time));
+    y.domain(d3.extent(dataFilter.flat(), d => d.patch));
+
+    selected.forEach((s,i) => {
+      line[i]
+        .datum(dataFilter[i])
+        .transition()
+        .duration(500)
+        .attr("d", d3.line()
+          .x(d => x(d.time))
+          .y(d => y(d.patch))
+        )
+        .attr("stroke", myColor(s))
+        .style("stroke-width", 3)
+        .style("fill", "none")
+    });
+
+    xrender
+      .transition()
+      .duration(500)
+      .call(d3.axisBottom(x).ticks(7));
+
+    yrender
+      .transition()
+      .duration(500)
+      .call(d3.axisLeft(y));
+  }
+
+
+  // Add the options to the button
+  const selectButton = [];
+  const onChange = () => {
+    url.searchParams.set("names", selectButton.map(button => button.property("value")).join('~'));
+    url.searchParams.set("kind", kindSelect.property("value"));
+    history.replaceState({}, null, url)
+
+    const data = selectButton.map(button => {
+      const value = button.property("value")
+      button.style("background-color", myColor(value));
+      return value;
+    });
+    update(data);
+  }
+  for(let i = 0; i<entries; ++i) {
+    selectButton[i] = buttons.append("select");
+    selectButton[i]
+      .selectAll('myOptions')
+      .data(Array.from(allName).sort())
+      .enter()
+      .append('option')
+      .text(d => d)
+      .attr("value", d => d)
+      .property("selected", d => d == names[i])
+    selectButton[i].on("change", onChange)
+  }
+
+  kindSelect.on("change", onChange)
+
+  onChange();
+
+</script>
