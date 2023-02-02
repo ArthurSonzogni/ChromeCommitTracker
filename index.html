@@ -6,6 +6,15 @@
   <label>Kind</label>
   <select id="kindSelect">kind</select>
 
+  <label>Start date</label>
+  <input
+    id="dateSelect"
+    type="date"
+    value="2000-01-01"
+    min="2000-01-01"
+    max="2025-01-01"h>
+  </select>
+
   <label>entries</label>
   <select id="entriesSelect">entries</select>
 
@@ -79,6 +88,7 @@ select {
       window.location.href = url;
     });
 
+  const dateSelect = d3.select("#dateSelect");
 
   // set the dimensions and margins of the graph
   const margin = {
@@ -140,6 +150,8 @@ select {
 
   // A function that update the chart
   const update = selected => {
+    const startDateRaw = new Date(dateSelect.property("value"));
+    const startDate = isNaN(startDateRaw) ? new Date("1992-02-22") : startDateRaw;
     const kindMap = {
       author: 0,
       review: 1,
@@ -151,7 +163,7 @@ select {
     const dataFilter = selected.map(s => {
       let accu = 0;
       return data
-         .filter(d => d.name == s && d.author != kind)
+         .filter(d => d.name == s && d.author != kind && d.time >= startDate)
          .reverse()
          .map(d => {
             accu++;
@@ -216,6 +228,7 @@ select {
   }
 
   kindSelect.on("change", onChange)
+  dateSelect.on("change", onChange)
 
   onChange();
 
