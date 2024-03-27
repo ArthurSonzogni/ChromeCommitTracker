@@ -1,0 +1,128 @@
+[
+  {
+    "name": "files_cpp",
+    "description": "The number non-test C++ files",
+    "file": "files_cpp",
+    "script": "files_cpp.sh"
+  },
+  {
+    "name": "DanglingUntriaged",
+    "description": "A pointer dangling for reasons uninvestigated yet",
+    "pattern": "DanglingUntriaged",
+    "file": "DanglingUntriaged"
+  },
+  {
+    "name": "LeakedDanglingUntriaged",
+    "description": "A pointer dangling for reasons uninvestigated yet. Those raw_ptr are still pointing toward the freed area after the end of the test or the program",
+    "pattern": "LeakedDanglingUntriaged",
+    "file": "LeakedDanglingUntriaged"
+  },
+  {
+    "name": "DanglingAcrossTasks",
+    "description": "A pointer dangling for reasons uninvestigated yet. The pointer was dangoling for longer than the duration of the task",
+    "pattern": "DanglingAcrossTasks",
+    "file": "DanglingAcrossTasks"
+  },
+  {
+    "name": "raw_ptr",
+    "description": "The number of raw_ptr",
+    "pattern": "raw_ptr<",
+    "file": "raw_ptr"
+  },
+  {
+    "name": "todo",
+    "description": "The number of TODO",
+    "pattern": "TODO(",
+    "file": "todo"
+  },
+  {
+    "name": "base_unretained",
+    "description": "The number base::Unretained",
+    "pattern": "base::Unretained",
+    "file": "base_unretained"
+  },
+  {
+    "name": "base_bind_once",
+    "description": "The number base::BindOnce",
+    "pattern": "base::BindOnce",
+    "file": "base_bind_once"
+  },
+  {
+    "name": "base_bind_repeating",
+    "description": "The number base::BindRepeating",
+    "pattern": "base::BindRepeating",
+    "file": "base_bind_repeating"
+  },
+  {
+    "name": "GC_PLUGIN_IGNORE",
+    "description": "The number GC_PLUGIN_IGNORE",
+    "pattern": "GC_PLUGIN_IGNORE",
+    "file": "gc_plugin_ignore"
+  },
+  {
+    "name": "arthursonzogni",
+    "description": "Every mention of @arthursonzogni",
+    "pattern": "arthursonzogni",
+    "file": "arthursonzogni"
+  },
+  {
+    "name": "raw-ptr-exclusion-addr-of",
+    "description": "The raw_ptr excluded for #addr-of",
+    "pattern": "#addr-of",
+    "file": "raw-ptr-addr-of"
+  },
+  {
+    "name": "raw-ptr-exclusion-in-out-param-ref",
+    "description": "The raw_ptr excluded for #in-out-param-ref",
+    "pattern": "#in-out-param-ref",
+    "file": "raw-ptr-in-out-param-ref"
+  },
+  {
+    "name": "raw-ptr-exclusion-overlapping",
+    "description": "The raw_ptr excluded for #overlapping",
+    "pattern": "#overlapping",
+    "file": "raw-ptr-overlapping"
+  },
+  {
+    "name": "raw-ptr-exclusion-constexpr-ctor-field-initializer",
+    "description": "The raw_ptr excluded for #constexpr-ctor-field-initializer",
+    "pattern": "#constexpr-ctor-field-initializer",
+    "file": "raw-ptr-constexpr-ctor-field-initializer"
+  },
+  {
+    "name": "raw-ptr-exclusion-constexpr-var-initializer",
+    "description": "The raw_ptr excluded for #constexpr-var-initializer",
+    "pattern": "#constexpr-var-initializer",
+    "file": "raw-ptr-constexpr-var-initializer"
+  },
+  {
+    "name": "raw-ptr-exclusion-macro",
+    "description": "The raw_ptr excluded for #macro",
+    "pattern": "#macro",
+    "file": "raw-ptr-macro"
+  },
+  {
+    "name": "raw-ptr-exclusion-global-scope",
+    "description": "The raw_ptr excluded for #global-scope",
+    "pattern": "#global-scope",
+    "file": "raw-ptr-global-scope"
+  },
+  {
+    "name": "raw-ptr-exclusion-union",
+    "description": "The raw_ptr excluded for #union",
+    "pattern": "#union",
+    "file": "raw-ptr-union"
+  },
+  {
+    "name": "raw-ptr-exclusion-reinterpret-cast-trivial-type",
+    "description": "The raw_ptr excluded for #reinterpret-cast-trivial-type",
+    "pattern": "#reinterpret-cast-trivial-type",
+    "file": "raw-ptr-reinterpret-cast-trivial-type"
+  },
+  {
+    "name": "RAW_PTR_EXCLUSION",
+    "description": "The number of RAW_PTR_EXCLUSION",
+    "pattern": "RAW_PTR_EXCLUSION",
+    "file": "RAW_PTR_EXCLUSION"
+  }
+]
